@@ -1,0 +1,22 @@
+data1 <- read.csv("C:\\Users\\xps13\\Desktop\\GO\\kk.csv",header=T,
+                  stringsAsFactor=F)
+library(ggplot2)
+library("dplyr")
+library("scales")
+
+
+names<- data1$length
+
+class(names)
+
+frequency<- round(as.double(data1$frequency),2)
+
+print(class(frequency))
+
+data2 <- data.frame(x= names,y=frequency)
+
+p<- ggplot(data = data2, mapping = aes(x, y)) + geom_bar(stat="identity",width= 0.5,colour = "grey")+
+
+  geom_text(stat="identity",aes(label=frequency), position=position_dodge(0.5),vjust=-0.5,color="black", size=3.5)+
+  theme_minimal()
+p+ labs(x="Nucleotide(nt)",y="Frenquency(%)")
