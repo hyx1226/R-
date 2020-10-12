@@ -1,0 +1,21 @@
+BiocManager::install("KEGGgraph")
+library("ggplot2")
+library("GOplot")
+library("DOSE") 
+library("org.Hs.eg.db")
+library("topGO")
+library("clusterProfiler")
+library("pathview")
+library("AnnotationHub") 
+library("biomaRt")
+library("openxlsx")
+gene <- read.csv("C:\\Users\\xps13\\Desktop\\GO\\targetresult2.csv",header=T,
+                 stringsAsFactor=F)
+gene.df <- bitr(gene$symbol, fromType="SYMBOL",
+                toType="ENTREZID", 
+                OrgDb = "org.Hs.eg.db")
+go <- enrichGO(gene = gene.df$ENTREZID, OrgDb = "org.Hs.eg.db", pAdjustMethod = "fdr",pvalueCutoff = 0.05,
+               qvalueCutoff = 0.05, ont="all",minGSSize = 1,
+               maxGSSize = 90000)
+#barplot(go, showCategory=10,split="ONTOLOGY")+ facet_grid(ONTOLOGY~., scale="free")
+GOBubble(go, title = 'Bubble plot', colour = c('orange', 'darkred', 'gold'), display = 'multiple', labels = 3)
