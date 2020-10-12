@@ -1,0 +1,35 @@
+BiocManager::install("KEGGgraph")
+library("ggplot2")
+library("GOplot")
+library("DOSE") 
+library("org.Hs.eg.db")
+library("topGO")
+library("clusterProfiler")
+library("pathview")
+library("AnnotationHub") 
+library("biomaRt")
+library("openxlsx")
+gene <- read.csv("C:\\Users\\xps13\\Desktop\\GO\\targetresult2.csv",header=T,
+                 stringsAsFactor=F)
+gene.df <- bitr(gene$symbol, fromType="SYMBOL",
+                toType="ENTREZID", 
+                OrgDb = "org.Hs.eg.db")
+
+
+kk <- enrichKEGG(gene = gene.df$ENTREZID,
+                 organism ="human",
+                 pvalueCutoff = 0.05,
+                 qvalueCutoff = 0.05,
+                 minGSSize = 1,maxGSSize = 90000,
+                 #readable = TRUE ,
+                 use_internal_data =FALSE)
+write.table(as.data.frame(kk@result), file="C:\\Users\\xps13\\Desktop\\GO\\test_kk.txt")
+#柱状图
+barplot(KK,showCategory = 20)
+#点图
+tiff(width = 30,height = 20,units ="cm",compression="lzw",bg="white",res=600)
+dotplot(kk, showCategory = 20)
+dev.off()
+
+##网络图
+cnetplot(enrichkk,foldChange = gene$ENTREZID,circular=T,colorEdge=T)
