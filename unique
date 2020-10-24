@@ -1,0 +1,4 @@
+##筛选重复数
+data <-
+
+unique (data$)
