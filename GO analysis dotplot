@@ -5,8 +5,8 @@ gene.df <- bitr(gene$symbol, fromType="SYMBOL",
                 toType="ENTREZID", 
                 OrgDb = "org.Hs.eg.db")
 go <- enrichGO(gene = gene.df$ENTREZID, OrgDb = "org.Hs.eg.db", pAdjustMethod = "fdr",pvalueCutoff = 0.05,
-               qvalueCutoff = 0.05, ont="all",minGSSize = 1,
-               maxGSSize = 90000)
+               qvalueCutoff = 0.05, ont="all",minGSSize = 10,
+               maxGSSize = 10000)
 #barplot(go, main="GO analysis for all known DEmiRs",xlab="Gene Counts",showCategory=10,split="ONTOLOGY")+ facet_grid(ONTOLOGY~., scale="free")
 #GOBubble(go, title = 'Bubble plot', colour = c('orange', 'darkred', 'gold'), display = 'multiple', labels = 3)
 dotplot(go,split="ONTOLOGY",showCategory=10)+facet_grid(ONTOLOGY~., scale="free")
