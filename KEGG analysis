@@ -28,7 +28,7 @@ write.table(as.data.frame(kk@result), file="C:\\Users\\xps13\\Desktop\\GO\\test_
 barplot(KK,showCategory = 20)
 #点图
 tiff(width = 30,height = 20,units ="cm",compression="lzw",bg="white",res=600)
-dotplot(kk, showCategory = 20)
+dotplot(kk, x = ~ -log(qvalue))+scale_size(range=c(2, 20))+scale_color_gradient(high="red",low='green')
 dev.off()
 
 ##网络图
