@@ -1,0 +1,6 @@
+library("openxlsx")
+gene <- read.csv("C:\\Users\\xps13\\Desktop\\tt.txt",header=T,
+                 stringsAsFactor=F)
+gene<-unique(gene)
+write.table (gene,file ="C:\\Users\\xps13\\Desktop\\tt1.txt", 
+row.names = FALSE, col.names =FALSE, quote =FALSE)  
