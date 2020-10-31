@@ -1,0 +1,119 @@
+rm(list = ls())  ## 魔幻操作，一键清空~
+options(stringsAsFactors = F)#在调用as.data.frame的时，将stringsAsFactors设置为FALSE可以避免character类型自动转化为factor类型
+# 注意查看下载文件的大小，检查数据 
+f='GSE38959_eSet.Rdata'
+# https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE64634
+library(GEOquery)
+# 这个包需要注意两个配置，一般来说自动化的配置是足够的。
+#Setting options('download.file.method.GEOquery'='auto')
+#Setting options('GEOquery.inmemory.gpl'=FALSE)
+if(!file.exists(f)){
+  gset <- getGEO('GSE48149', destdir=".",
+                 AnnotGPL = F,     ## 注释文件
+                 getGPL = F)       ## 平台文件
+  save(gset,file=f)   ## 保存到本地
+}
+load('GSE48149_eSet.Rdata')  ## 载入数据
+class(gset)  #查看数据类型
+length(gset)  #
+class(gset[[1]])
+gset
+# assayData: 45015 features, 47 samples
+
+# 因为这个GEO数据集只有一个GPL平台，所以下载到的是一个含有一个元素的list
+a=gset[[1]] #
+dat=exprs(a) #a现在是一个对象，取a这个对象通过看说明书知道要用exprs这个函数
+dim(dat)#看一下dat这个矩阵的维度 
+# GPL4133
+dat[1:4,1:4] #查看dat这个矩阵的1至4行和1至4列，逗号前为行，逗号后为列
+boxplot(dat,las=2)
+dat=dat[apply(dat,1,sd)>0,]
+dim(dat) # 
+dat[dat<0]=1
+boxplot(dat,las=2)
+
+range(dat) # 1.53e+00 4.04e+05 数字太大，需要log
+dat=log2(dat+1)
+boxplot(dat,las=2)
+library(limma)
+#标准化
+dat=normalizeBetweenArrays(dat)
+boxplot(dat,las=2)
+pd=pData(a)
+table(pd$source_name_ch1)
+
+pd=pData(a)
+pd=pd[-(1:13),]
+pd=pd[-(10:17),]
+pd=pd[-(10:22),]
+View(pd)
+
+##分组
+table(pd$source_name_ch1)
+##分组
+group_list=ifelse(grepl('control',pd$title),'control','SSc-PAH')
+table(group_list)
+
+group_list=ifelse(grepl('NL',pd$title),'control','SSc-PAH')
+table(group_list)
+
+
+library(GEOquery)
+#Download GPL file, put it in the current directory, and load it:
+gpl <- getGEO('GPL16221', destdir=".")
+##需要修改相应的平台号，把平台信息赋值给gpl
+colnames(Table(gpl))  
+head(Table(gpl)[,c(1,7)]) 
+## you need to check this , which column do you need
+probe2gene=Table(gpl)[,c(1,7)]
+head(probe2gene)
+library(stringr)  
+save(probe2gene,file='probe2gene.Rdata')
+
+
+load(file='probe2gene.Rdata')
+ids=probe2gene 
+head(ids)
+#为查看前六行
+colnames(ids)=c('probe_id','symbol')  
+#将列名统一改为'probe_id','symbol'方便后续统一操作。
+
+length(unique(ids$symbol)) 
+#[1] 18832个独特的基因探针，意味着本来19825个里面有一部分是重复的
+tail(sort(table(ids$symbol)))
+table(sort(table(ids$symbol)))
+#每个对象出现的个数
+plot(table(sort(table(ids$symbol))))
+#画图观察
+
+ids=ids[ids$symbol != '',]
+ids=ids[ids$probe_id %in%  rownames(dat),]
+##%in%用于判断是否匹配，然后取匹配的几行，去掉无法匹配的信息。
+
+dat[1:5,1:5]   
+dat=dat[ids$probe_id,] 
+#取表达矩阵中可以与探针名匹配的那些，去掉无法匹配的表达数据，这时只剩下19825个探针及表达信息，其余已被剔除。
+
+ids$median=apply(dat,1,median) 
+#ids新建median这一列，列名为median，同时对dat这个矩阵按行操作，取每一行的中位数，将结果给到median这一列的每一行
+ids=ids[order(ids$symbol,ids$median,decreasing = T),]
+#对ids$symbol按照ids$median中位数从大到小排列的顺序排序
+##即先按symbol排序，相同的symbol再按照中位数从大到小排列，方便后续保留第一个值。
+##将对应的行赋值为一个新的ids，这样order()就相当于sort()
+ids=ids[!duplicated(ids$symbol),]
+#将symbol这一列取取出重复项，'!'为否，即取出不重复的项，去除重复的gene ，保留每个基因最大表达量结果.最后得到18832个基因。
+dat=dat[ids$probe_id,] 
+#新的ids取出probe_id这一列，将dat按照取出的这一列中的每一行组成一个新的dat
+rownames(dat)=ids$symbol
+#把ids的symbol这一列中的每一行给dat作为dat的行名
+head(dat)
+##至此我们就得到了该数据集的表达矩阵，最后将结果保存。
+save(dat,group_list,file = 'step1-output.Rdata')
+write.csv(dat,file="expressionmetrix_GSE48149.csv")
+rm(list = ls()) 
+options(stringsAsFactors = F)
+load(file = 'step1-output.Rdata')
+# 每次都要检测数据
+dat[1:4,1:4] 
+table(group_list)
+exp['MAPK1',]
