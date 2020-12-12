@@ -1,0 +1,15 @@
+install.packages("tidyverse")
+install.packages("rmarkdown")
+install.packages('Seurat')
+
+library(Seurat)
+library(rmarkdown)
+library(tidyverse)
+setwd("F:/biotech/10")
+pbmc.data <- read.csv("C:\\Users\\xps13\\Desktop\\singlecell\\GSE117988_raw.expMatrix_PBMC.csv")
+dim(pbmc.data)
+#对数据进行一个标准化的处理，先求每个细胞文库的总大小，然后用它的中位数除以总大小得到一个小数，然后按列乘以这个小数就相当于对文库进行了归一化，去除文库本身的大小差异
+pbmc.data <- log2(1 + sweep(pbmc.data, 2, median(colSums(pbmc.data))/colSums(pbmc.data), '*'))
+head(colnames(pbmc.data))
+pbmc<- CreateSeuratObject(counts = pbmc.data, project = "10X pbmc", min.cells = 1, min.features = 0)
+pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
