@@ -1,0 +1,48 @@
+library(ggplot2)
+library(ggrepel)
+library(dplyr)
+install.packages("ggpubr")
+install.packages("ggthemes")
+library("ggpubr")
+library("ggthemes")
+
+head(data)
+data <- read.csv("C:\\Users\\xps13\\Desktop\\GO\\DERNA2.csv",header=T,
+                 stringsAsFactor=F)  
+
+data$change = ifelse(data$pvalue < 0.05 & abs(log2(data$FC)) >= 1, 
+                     ifelse(log2(data$FC)> 1 ,'Up','Down'),
+                     'Filtered')
+
+p <- ggplot(data = data, 
+            aes(x = log2(data$FC), 
+                y = -log10(data$pvalue), 
+                color=change,
+                label = data$锘縢ene)) +
+  geom_point(alpha=0.4, size=3.5) +
+  scale_color_manual(values=c("blue", "grey","red"))+
+  xlim(c(-10, 10)) +
+  geom_vline(xintercept=c(-1,1),lty=4,col="black",lwd=0.8) +
+  geom_hline(yintercept = -log10(0.005),lty=4,col="black",lwd=0.8) +
+  labs(x="log2(fold change)",
+       y="-log10 (p-value)",
+       title="Vocalno Plot")  +
+  theme_base()+
+  theme(legend.position = "right",
+        panel.grid=element_blank(),
+        axis.title = element_text(size = 16),
+        axis.text = element_text(size = 14))
+p + theme(legend.title=element_blank())
+p + guides(color=guide_legend(title=NULL))
+p
+label=ifelse(data$pvalue < 0.001 & abs(log2(data$FC)) >= 1,data$锘縢ene,"")
+
+p+geom_text_repel(data = data, aes(x = data$log2FC, 
+                                   y = -log10(data$pvalue), 
+                                   label = label),
+                  size = 3,box.padding = unit(0.5, "lines"),
+                  point.padding = unit(0.8, "lines"), 
+                  segment.color = "black", 
+                  show.legend = FALSE)
+
+p
