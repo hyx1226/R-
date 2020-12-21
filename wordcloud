@@ -1,0 +1,43 @@
+install.packages('PubMedWordcloud')
+library(PubMedWordcloud) 
+p <- getPMIDsByKeyWords(keys='pulmonary hypertension',  
+                        journal="chest", 
+                        dFrom=2018, 
+                        dTo=2020) 
+ab <- getAbstracts(p)
+Sys.setlocale(category  = "LC_ALL", locale = "C")  
+clean <- cleanAbstracts(ab)
+plotWordCloud(clean)
+install.packages("RISmed")
+library("RISmed")
+
+search_topic<-c("(microRNA)AND(pulmonary hypertension)")
+search_query<-EUtilsSummary(search_topic,db="pubmed",
+                            retmax=100,datetype="pdat",
+                            mindate=2020,maxdate=2021)
+records<-EUtilsGet(search_query)
+summary(search_query)
+
+library("tidyverse")
+pubmed<-tibble("Title"=ArticleTitle(records),"Year"=YearPubmed(records),
+               "journal"=ISOAbbreviation(records))
+library(ggplot2)
+ggplot(pubmed,aes(fct_infreq(journal)))+geom_bar()
++coord_flip()
++theme_classic()
+word<-records@Mesh
+word<-word[!is.na(word)]
+library(dplyr)
+distinct(word[[1]],Heading,.keep_all=T)
+word<-lapply(word,distinct,Heading,.keep_all=T)
+wordtable<-list()
+for(i in 1:length(word)){
+  wordtable[[i]]<-word[[i]][,1]
+}
+  wordcd<-table(unlist(wordtable))
+  head(wordcd)
+
+  library("wordcloud2")
+  wordcloud2(wordcd)
+
+  
