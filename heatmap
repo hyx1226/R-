@@ -1,0 +1,24 @@
+library(pheatmap)
+mat=read.table("C:\\Users\\xps13\\Desktop\\GO\\DEmiRNA.txt",header=TRUE,row.names=1,sep="\t",check.names = F)
+dim(mat)
+pheatmap(mat,cluster_rows =T,scale = "row",clustering_method = "average",fontsize=5,fontsize_row=5,fontsize_col=10,color=colorRampPalette(rev(c("red","white","blue")))(102))
+rownames(mat) <- mat[,1] #将行名设置为列表的行名
+mat <- mat[,-1] # 去掉第一行
+mat<-log(mat,10) #  将数值转换
+mat[sapply(mat,is.infinite)]<- -3 # 替换负无穷为-3
+p<- pheatmap(mat,cellwidth = 20, cellheight = 9,border_color="black",clustering_distance_rows = "minkowski",
+         clustering_method="complete",
+         cluster_cols = T,treeheight_col = 20,
+         cluster_rows = T,treeheight_row = 20,legend_breaks = c(1:5), legend_labels = c("1.0","2.0","3.0","4.0","5.0")) # 绘制热图
+
+par(oma=c(3,3,3,3)) 
+p
+
+save_pheatmap_pdf <- function(x, filename, width=7, height=7) {
+  stopifnot(!missing(x))
+  stopifnot(!missing(filename))
+  pdf(filename, width=width, height=height)
+  grid::grid.newpage()
+  grid::grid.draw(x$gtable)
+  dev.off()
+}
