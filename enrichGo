@@ -1,0 +1,42 @@
+library("ggplot2")
+library("GOplot")
+library("DOSE") 
+library("org.Hs.eg.db")
+library("topGO")
+library("clusterProfiler")
+library("pathview")
+library("AnnotationHub") 
+library("biomaRt")
+library("openxlsx")
+library("enrichplot")
+gene <- read.table("C:\\Users\\xps13\\Desktop\\GO\\1115\\205target.txt",header=T,
+                 sep="\t")
+gene.df <- bitr(gene$symbol, fromType="SYMBOL",
+                toType="ENTREZID", 
+                OrgDb = "org.Hs.eg.db")
+
+go <- enrichGO(gene = gene.df$ENTREZID, OrgDb = "org.Hs.eg.db", pAdjustMethod = "fdr",pvalueCutoff = 0.05,
+               qvalueCutoff = 0.05, ont="all",minGSSize = 10,
+               maxGSSize = 90000)
+
+
+kk <- enrichKEGG(gene = gene.df$ENTREZID,
+                 organism ="human",
+                 pvalueCutoff = 0.05,
+                 qvalueCutoff = 0.05,
+                 minGSSize = 10,maxGSSize = 90000,
+                 #readable = TRUE ,
+                 use_internal_data =FALSE)
+#write.table(as.data.frame(go@result), file="C:\\Users\\xps13\\Desktop\\GO\\1115\\upgenetest_go.txt",sep="\t")
+#write.table(as.data.frame(kk@result), file="C:\\Users\\xps13\\Desktop\\GO\\1115\\upgenetest_kk.txt",sep="\t")
+go<-simplify(go)
+kk<-simplify(kk)
+dotplot(go, x = ~ -log(qvalue))+scale_size(range=c(2, 10))+scale_color_gradient(high="red",low='blue')
++scale_y_discrete(labels=function(x) stringr::str_wrap(x, width=60))
+dotplot(kk, x = ~ -log(qvalue))+scale_size(range=c(2, 10))+scale_color_gradient(high="red",low='blue')
++scale_y_discrete(labels=function(x) stringr::str_wrap(x, width=60))
+edox <- setReadable(go, 'org.Hs.eg.db', 'ENTREZID')
+edox2<-setReadable(kk,'org.Hs.eg.db', 'ENTREZID')
+emapplot(edox,showCategory = 10,text.default(font="arial"))
+cnetplot(edox, node_label="category") 
+enrichplot::heatplot(edox,showCategory = 10)+ theme(axis.text.x = element_text(size = base_size * 0.7, angle = 330, hjust = 0, colour = "black"),axis.text.y = element_text(size = base_size * 0.7, hjust = 0, colour = "black"))
