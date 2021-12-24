@@ -1,0 +1,8 @@
+install.packages("GGally")
+nba = read.csv("C:\\Users\\xps13\\Desktop\\GO\\allhdl-IPAHA.csv",header=T,stringsAsFactor=F)
+
+library(ggplot2)
+library(GGally)
+ggcorr(nba)
+ggcorr(nba[, 2:18], nbreaks = 4, palette = "RdGy",label = TRUE, 
+       label_size = 3, label_color = "white",hjust = 0.60)
