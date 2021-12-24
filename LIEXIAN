@@ -1,0 +1,25 @@
+library(survival)
+
+library(rms)
+
+library(openxlsx)
+library(survival)
+library(lattice)
+library(Formula)
+library(ggplot2)
+library(Hmisc)
+library(rms)
+
+
+data <- read.csv("C:\\Users\\xps13\\Desktop\\GO\\allfollowup5year.csv",header=T,stringsAsFactor=F)
+dd<-datadist(data)
+options(datadist="dd")
+
+f2 <- psm(Surv(time,status) ~ 6MWD+NtproBNP+TC+TG+HDL+ApoA+ApoB+ApoE+LPA,data =  data, dist='lognormal') 
+med <- Quantile(f2)
+surv <- Survival(f2)
+nom <- nomogram(f2, fun=list(function(x) surv(36, x),
+   function(x) surv(60, x)),funlabel=c("3-year Survival Probability", "5-year Survival Probability"), fun.at=list(c(0.1,0.5, 0.7,0.9),c(0.9,0.7, 0.5, 0.3, 0.1)))
+              
+                                                                                                                       
+plot(nom, xfrac=.2,label.every = 3,lmgp=0.5)
