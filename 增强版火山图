@@ -1,0 +1,38 @@
+install.packages('devtools');devtools::install_github('kevinblighe/EnhancedVolcano');
+library(EnhancedVolcano)
+data <- read.csv("C:\\Users\\xps13\\Desktop\\protein\\EFACED23.csv",header=T,
+                 stringsAsFactor=F,row.names=1,)
+
+keyvals <- ifelse(
+  data$log2FC < -1.5& data$pvalue<0.1 , 'royalblue',
+  ifelse(data$log2FC  > 1.5 & data$pvalue<0.1, 'gold',
+         'black'))
+keyvals[is.na(keyvals)] <- 'black'
+names(keyvals)[keyvals == 'gold'] <- 'unregulate'
+names(keyvals)[keyvals == 'black'] <- 'filtered'
+names(keyvals)[keyvals == 'royalblue'] <- 'downregulate'
+
+
+EnhancedVolcano(data, lab = rownames(data), x = 'log2FC', y = 'pvalue',
+                xlim = c(-3, 3),ylim=c(0,3), selectLab = rownames(data)[which(names(keyvals) %in% c('unregulate', 'downregulate'))],
+                xlab = bquote(~Log[2]~ 'fold change'),
+                title = 'Custom colour over-ride',
+                pCutoff = 0.05,
+                FCcutoff = 2.0,
+                pointSize = 3.5,
+                labSize = 4.5,
+                #shape = c(6, 4, 2, 11),
+                colCustom = keyvals,
+                colAlpha = 1,
+                legendPosition = 'left',
+                legendLabSize = 15,
+                legendIconSize = 5.0,
+                drawConnectors = TRUE,
+                widthConnectors = 1.0,
+                colConnectors = 'black',
+                arrowheads = FALSE,
+                gridlines.major = TRUE,
+                gridlines.minor = FALSE,
+                border = 'partial',
+                borderWidth = 1.5,
+                borderColour = 'black')
