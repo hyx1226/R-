@@ -1,0 +1,35 @@
+install.packages("forestplot")
+library("forestplot")
+windowsFonts(myFont1 = windowsFont(
+  "Arial"
+)) 
+
+
+fp <-read.csv("C:\\Users\\xps13\\Desktop\\GO\\0202\\MFblood.csv",header=T)
+fpTxtGp(label = gpar(fontfamily = "Arial"))
+
+forestplot(labeltext=as.matrix(fp[,1:3]),
+           mean=fp$mean,
+           lower=fp$OR1,
+           upper=fp$OR2,
+           zero=0,
+           boxsize=0.2,
+           graph.pos=2)
+forestplot(labeltext=as.matrix(fp[,1:3]),
+           mean=fp$mean,
+           lower=fp$OR1,
+           upper=fp$OR2,
+           zero=0,
+           grid = structure(c(1), gp = gpar(col = "steelblue", lty = 2)),
+           clip = c(1, 2.5),
+           xticks = c(-2, 0,2,4, 6,10),
+           
+           txt_gp = fpTxtGp(ticks = gpar(cex = 1), xlab = gpar(cex = 1.5), cex = 1.2), # configure fontsize
+           boxsize = 0.3,
+           graph.pos = 2, # position of the plot
+           col=fpColors(box = "blue"),
+           line.margin = .1,
+           fn.ci_norm = fpDrawCircleCI,
+           lty.ci = 7,   # Confidential Intervals
+           lwd.ci = 3,
+           ci.vertices.height = 0.15)
