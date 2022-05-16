@@ -1,0 +1,17 @@
+install.packages('clusterProfiler')
+library("ggstatsplot")
+library("clusterProfiler")
+
+library("enrichplot")
+library("ggplot2")
+library("ggpubr")
+
+ggviolin(data,  x = "group", y = "TC", ylab ="TC(mml",xlab=FALSE,color= "group",trim=FALSE,size=1,5, palette = c("#00AFBB",  "#FC4E07"),
+         add = "boxplot", add.params = list(fill = "white"))+
+  theme(panel.grid = element_blank(), axis.line = element_line(colour = 'black'), panel.background = element_blank(),
+        
+        axis.text = element_text(size = 35, color = 'black'), axis.title = element_text(size = 35, color = 'black')) +
+  
+  theme(plot.title = element_text(hjust = 0.5, face = "bold")) +
+  
+  theme(legend.position="none")+ylim(0,10)
