@@ -1,0 +1,18 @@
+install.packages("forestplot")
+install.packages("ggpubr")
+library("ggpubr")
+library("forestplot")
+library("ggplot2")
+                                   # Add global the p-value 
+install.packages("ggstatsplot")
+library("ggstatsplot")
+data<-read.csv("C:\\Users\\xps13\\Desktop\\GO\\0515\\0515TC.csv",header=T)
+ggviolin(data,  x = "group", y = "TC", fill = "group",trim=FALSE,
+        add = "boxplot", add.params = list(fill = "white"))+
+theme(panel.grid = element_blank(), axis.line = element_line(colour = 'black'), panel.background = element_blank(),
+      
+      axis.text = element_text(size = 10, color = 'black'), axis.title = element_text(size = 12, color = 'black')) +
+  
+  theme(plot.title = element_text(hjust = 0.5, face = "bold")) +
+  
+  theme(legend.position="none")
